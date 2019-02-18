@@ -1,0 +1,179 @@
+// Auto-generated header code
+
+// Auto-generated header code ended
+
+// User script
+//
+// This U-SQL script demonstrates loading data provided in this dataset
+// and computing h-index for all authors of an affiliation.
+// U-SQL script could be run in Azure Data Lake Analytic service.
+//
+// To do:
+//   1. Run CreateFunctions.usql to define functions before running this script
+//   2. Replace ##YourBlobAccount## with your blob account
+//
+DECLARE @dataVersion string = "mag-2019-01-25";
+DECLARE @blobAccount string = "iunimag";
+DECLARE @uriPrefix   string = "wasb://" + @dataVersion + "@" + @blobAccount + "/";
+
+//DECLARE @output  string = "/YingGroup/Xuli/AIpapersConf.tsv";
+//DECLARE @inputFiles   string = "/YingGroup/Xuli/";
+//
+// Load Academic Graph data
+@papers = Papers(@uriPrefix);
+@paperAuthorAffiliations = PaperAuthorAffiliations(@uriPrefix);
+@authors = Authors(@uriPrefix);
+@abstracts = PaperAbstractsInvertedIndex(@uriPrefix);
+@conferences = ConferenceInstances(@uriPrefix);
+@journals = Journals(@uriPrefix);
+@citations = PaperReferences(@uriPrefix);
+@citationsCon = PaperCitationContexts(@uriPrefix);
+
+//
+// Read the input files
+//
+/**/
+DECLARE @input_Path string = @uriPrefix + "AIpapersAll.tsv";
+@paperList =
+    EXTRACT AuthorIds string,
+           AuthorNames string,
+           AuthorOrders string,
+           OrigAffiliates string,
+           Affiliates string,
+           DisplayName string,
+           JPaperCount string,
+           JCitationCount string,
+           PaperId long,
+           Rank string,
+           Doi string,
+           DocType string,
+           JournalId string,
+           ConferenceInstanceId string,
+           OriginalTitle string,
+           Year string,
+           Date string,
+           Publisher string,
+           ReferenceCount string,
+           CitationCount string,
+           EstimatedCitation string,
+           IndexedAbstract string
+FROM @input_Path
+USING Extractors.Tsv(silent: true, quoting: false, skipFirstNRows:1);
+
+@CiteOut =
+    SELECT R.PaperReferenceId AS PaperId
+    FROM @citations AS R
+         INNER JOIN
+             @paperList AS P
+         ON R.PaperId == P.PaperId;
+
+@CiteIn =
+    SELECT R.PaperId
+    FROM @citations AS R
+         INNER JOIN
+             @paperList AS P
+         ON R.PaperReferenceId == P.PaperId;
+
+@OtherPapersID =
+    SELECT PaperId FROM @CiteOut
+    UNION DISTINCT // Using DISTINCT is optional as it is the default value
+    SELECT PaperId FROM @CiteIn
+    EXCEPT DISTINCT // Using DISTINCT is optional as it is the default value
+    SELECT PaperId FROM @paperList;
+
+@allPapersID =    
+    SELECT PaperId FROM @paperList
+    UNION DISTINCT      // Using DISTINCT is optional as it is the default value
+    SELECT PaperId FROM @CiteOut
+    UNION DISTINCT      // Using DISTINCT is optional as it is the default value
+    SELECT PaperId FROM @CiteIn;  
+
+@AuthorPapers =
+    SELECT Paa.PaperId,
+           string.Join("; ", ARRAY_AGG(A.AuthorId)) AS AuthorIds,
+           string.Join("; ", ARRAY_AGG(A.DisplayName)) AS AuthorNames,
+           string.Join("; ", ARRAY_AGG(A.PaperCount)) AS AuthorPapers,
+           string.Join("; ", ARRAY_AGG(Paa.AuthorSequenceNumber)) AS AuthorOrders,
+           string.Join("; ", ARRAY_AGG(Paa.OriginalAffiliation)) AS OrigAffiliates,
+           string.Join("; ", ARRAY_AGG(Paa.AffiliationId)) AS Affiliates
+    FROM @authors AS A
+         INNER JOIN @paperAuthorAffiliations AS Paa
+         ON A.AuthorId == Paa.AuthorId
+         INNER JOIN @OtherPapersID AS P
+         ON Paa.PaperId == P.PaperId
+    GROUP BY Paa.PaperId;
+
+
+DECLARE @outputPaper   string = @uriPrefix + "AIpapersOthers.tsv";
+@MAGpapersFull =
+    SELECT DISTINCT  A.AuthorIds,
+           A.AuthorNames,
+           A.AuthorOrders,
+           A.OrigAffiliates,
+           A.Affiliates,
+           J.DisplayName AS Journal,
+           J.PaperCount AS JPaperCount,
+           J.CitationCount AS JCitationCount,
+           C.DisplayName AS Conference,
+           C.PaperCount AS CPaperCount,
+           C.CitationCount AS CCitationCount,
+           P.PaperId,
+           P.Rank,
+           P.Doi,
+           P.DocType,
+           P.JournalId,
+           P.ConferenceInstanceId,
+           P.OriginalTitle,
+           P.Year,
+           P.Date,
+           P.Publisher,
+           P.ReferenceCount,
+           P.CitationCount,
+           P.EstimatedCitation,
+           Ab.IndexedAbstract
+    FROM @OtherPapersID AS P0
+         LEFT OUTER JOIN
+             @papers AS P
+         ON P.PaperId == P0.PaperId
+         LEFT OUTER JOIN
+             @AuthorPapers AS A
+         ON P0.PaperId == A.PaperId
+         LEFT OUTER JOIN
+             @abstracts AS Ab
+         ON P0.PaperId == Ab.PaperId
+         LEFT OUTER JOIN
+             @journals AS J
+         ON P.JournalId == J.JournalId
+         LEFT OUTER JOIN
+             @conferences AS C
+         ON P.ConferenceInstanceId == C.ConferenceInstanceId;
+
+OUTPUT @MAGpapersFull
+TO @outputPaper
+USING Outputters.Tsv(quoting : false, outputHeader : true);
+
+DECLARE @outputCitations   string = @uriPrefix + "AIpapersCitationsAll.tsv";
+@CitationsAll =
+    SELECT R.PaperId,
+           R.PaperReferenceId,
+           C.CitationContext
+    FROM @citations AS R
+         INNER JOIN
+             @allPapersID AS P2
+         ON R.PaperReferenceId == P2.PaperId
+         INNER JOIN
+             @allPapersID AS P1
+         ON R.PaperId == P1.PaperId
+         LEFT OUTER JOIN @citationsCon AS C
+         ON R.PaperId == C.PaperId AND R.PaperReferenceId == C.PaperReferenceId;
+OUTPUT @CitationsAll
+TO @outputCitations
+USING Outputters.Tsv(quoting : false, outputHeader : true);
+
+// User script ended
+// Auto-generated footer code
+
+// Auto-generated footer code ended
+
+
+// User script ended
