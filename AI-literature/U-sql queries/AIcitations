@@ -1,3 +1,4 @@
+
 // Auto-generated header code
 
 // Auto-generated header code ended
@@ -81,6 +82,19 @@ USING Extractors.Tsv(silent: true, quoting: false, skipFirstNRows:1);
     EXCEPT DISTINCT // Using DISTINCT is optional as it is the default value
     SELECT PaperId FROM @paperList;
 
+@PatentPapersID =
+    SELECT P0.PaperId
+    FROM @OtherPapersID AS P0
+         LEFT OUTER JOIN
+             @papers AS P
+         ON P.PaperId == P0.PaperId
+         WHERE P.DocType.Equals("Patent");
+
+@ExtendPapersID =
+    SELECT PaperId FROM @OtherPapersID
+    EXCEPT DISTINCT // Using DISTINCT is optional as it is the default value
+    SELECT PaperId FROM @PatentPapersID;
+
 @allPapersID =    
     SELECT PaperId FROM @paperList
     UNION DISTINCT      // Using DISTINCT is optional as it is the default value
@@ -104,8 +118,8 @@ USING Extractors.Tsv(silent: true, quoting: false, skipFirstNRows:1);
     GROUP BY Paa.PaperId;
 
 
-DECLARE @outputPaper   string = @uriPrefix + "AIpapersOthers.tsv";
-@MAGpapersFull =
+DECLARE @outputPaper   string = @uriPrefix + "AIpapersPatent.tsv";
+@PatentPapers =
     SELECT DISTINCT  A.AuthorIds,
            A.AuthorNames,
            A.AuthorOrders,
@@ -131,7 +145,7 @@ DECLARE @outputPaper   string = @uriPrefix + "AIpapersOthers.tsv";
            P.CitationCount,
            P.EstimatedCitation,
            Ab.IndexedAbstract
-    FROM @OtherPapersID AS P0
+    FROM @PatentPapersID AS P0
          LEFT OUTER JOIN
              @papers AS P
          ON P.PaperId == P0.PaperId
@@ -148,8 +162,56 @@ DECLARE @outputPaper   string = @uriPrefix + "AIpapersOthers.tsv";
              @conferences AS C
          ON P.ConferenceInstanceId == C.ConferenceInstanceId;
 
-OUTPUT @MAGpapersFull
+OUTPUT @PatentPapers
 TO @outputPaper
+USING Outputters.Tsv(quoting : false, outputHeader : true);
+
+DECLARE @outputPaper2   string = @uriPrefix + "AIpapersExtend.tsv";
+@ExtendPapers =
+    SELECT DISTINCT  A.AuthorIds,
+           A.AuthorNames,
+           A.AuthorOrders,
+           A.OrigAffiliates,
+           A.Affiliates,
+           J.DisplayName AS Journal,
+           J.PaperCount AS JPaperCount,
+           J.CitationCount AS JCitationCount,
+           C.DisplayName AS Conference,
+           C.PaperCount AS CPaperCount,
+           C.CitationCount AS CCitationCount,
+           P.PaperId,
+           P.Rank,
+           P.Doi,
+           P.DocType,
+           P.JournalId,
+           P.ConferenceInstanceId,
+           P.OriginalTitle,
+           P.Year,
+           P.Date,
+           P.Publisher,
+           P.ReferenceCount,
+           P.CitationCount,
+           P.EstimatedCitation,
+           Ab.IndexedAbstract
+    FROM @ExtendPapersID AS P0
+         LEFT OUTER JOIN
+             @papers AS P
+         ON P.PaperId == P0.PaperId
+         LEFT OUTER JOIN
+             @AuthorPapers AS A
+         ON P0.PaperId == A.PaperId
+         LEFT OUTER JOIN
+             @abstracts AS Ab
+         ON P0.PaperId == Ab.PaperId
+         LEFT OUTER JOIN
+             @journals AS J
+         ON P.JournalId == J.JournalId
+         LEFT OUTER JOIN
+             @conferences AS C
+         ON P.ConferenceInstanceId == C.ConferenceInstanceId;
+
+OUTPUT @ExtendPapers
+TO @outputPaper2
 USING Outputters.Tsv(quoting : false, outputHeader : true);
 
 DECLARE @outputCitations   string = @uriPrefix + "AIpapersCitationsAll.tsv";
@@ -175,5 +237,3 @@ USING Outputters.Tsv(quoting : false, outputHeader : true);
 
 // Auto-generated footer code ended
 
-
-// User script ended
