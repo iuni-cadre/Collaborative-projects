@@ -12,6 +12,7 @@
 //   1. Run CreateFunctions.usql to define functions before running this script
 //   2. Replace ##YourBlobAccount## with your blob account
 //
+//
 DECLARE @dataVersion string = "mag-2019-01-25";
 DECLARE @blobAccount string = "iunimag";
 DECLARE @uriPrefix   string = "wasb://" + @dataVersion + "@" + @blobAccount + "/";
@@ -187,3 +188,5 @@ USING Outputters.Tsv(quoting : false, outputHeader : true);
 
 // User script ended
 // Auto-generated footer code
+
+// Auto-generated footer code ended
