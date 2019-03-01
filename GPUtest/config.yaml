@@ -1,0 +1,27 @@
+proxy:
+  secretToken: "<RANDOM_HEX>"
+
+auth:
+  type: dummy
+  dummy:
+    password: 'CADRE'
+  whitelist:
+    users:
+      - IUNItester
+
+auth:
+  admin:
+    users:
+      - IUNItester
+
+
+singleuser:
+  profileList:
+    - display_name: "Default: Shared, 8 CPU cores"
+      description: "Your code will run on a shared machine with CPU only."
+      default: True
+    - display_name: "Personal, 4 CPU cores & 26GB RAM, 1 NVIDIA Tesla K80 GPU"
+      description: "Your code will run a personal machine with a GPU."
+      kubespawner_override:
+        extra_resource_limits:
+          nvidia.com/gpu: "1"
