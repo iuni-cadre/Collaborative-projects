@@ -4,8 +4,8 @@ following https://www.kubeflow.org/docs/components/ksonnet/ for ksonnet installa
 
         Set some variables for the ksonnet version:
 
-        export KS_VER=0.13.1
-        export KS_PKG=ks_${KS_VER}_linux_amd64
+        KS_VER=0.13.1
+        KS_PKG=ks_${KS_VER}_linux_amd64
 
         Download the ksonnet package:
 
@@ -18,7 +18,7 @@ following https://www.kubeflow.org/docs/components/ksonnet/ for ksonnet installa
 
     2. Add the ks command to your path:
 
-      export PATH=$PATH:${HOME}/bin/$KS_PKG
+      PATH=$PATH:${HOME}/bin/$KS_PKG
       
 -----------------------------------------------------------------------------------
 following https://github.com/Azure/kubeflow-labs/tree/master/4-kubeflow for kubeflow deployment on azure
@@ -36,6 +36,9 @@ curl https://raw.githubusercontent.com/kubeflow/kubeflow/${KUBEFLOW_TAG}/scripts
 KFAPP=mykubeflowapp
 scripts/kfctl.sh init ${KFAPP} --platform none
 
+~/kubeflow/scripts/kfctl.sh generate platform
+~/kubeflow/scripts/kfctl.sh apply platform
+
 # Generate kubeflow app
 cd ${KFAPP}
 ~/kubeflow/scripts/kfctl.sh generate k8s
@@ -44,3 +47,14 @@ cd ${KFAPP}
 ~/kubeflow/scripts/kfctl.sh apply k8s
 
 kubectl get pods -n kubeflow
+
+-----------------------------------------------------------------------------------
+Following https://github.com/Azure/kubeflow-labs/blob/master/5-jupyterhub/README.md for JupyterHub public IP:
+
+To update the default service created for JupyterHub, run the following command to change the service to type LoadBalancer:
+cd ~/kubeflow/mykubeflowapp/ks_app
+ks param set jupyter serviceType LoadBalancer
+cd ..
+~/kubeflow/scripts/kfctl.sh apply k8s
+
+kubectl get svc -n kubeflow
