@@ -7,21 +7,36 @@ auth:
     password: 'CADRE'
   whitelist:
     users:
-      - IUNItester
+      - IUNItester, 2ndTester
 
 auth:
   admin:
     users:
       - IUNItester
-
-
+          
 singleuser:
+  # Get the latest image tag at:
+  # https://hub.docker.com/r/jupyter/datascience-notebook/tags/
+  # Inspect the Dockerfile at:
+  # https://github.com/jupyter/docker-stacks/tree/master/datascience-notebook/Dockerfile
+  image:
+    name: jupyter/minimal-notebook
+    tag: 7f1482f5a136
   profileList:
-    - display_name: "Default: Shared, 8 CPU cores"
-      description: "Your code will run on a shared machine with CPU only."
-      default: True
-    - display_name: "Personal, 4 CPU cores & 26GB RAM, 1 NVIDIA Tesla K80 GPU"
-      description: "Your code will run a personal machine with a GPU."
+    - display_name: "Minimal environment"
+      description: "To avoid too much bells and whistles: Python."
+      default: true
+    - display_name: "Datascience environment"
+      description: "If you want the additional bells and whistles: Python, R, and Julia."
       kubespawner_override:
+        image: jupyter/datascience-notebook:7f1482f5a136
+    - display_name: "Spark environment"
+      description: "The Jupyter Stacks spark image!"
+      kubespawner_override:
+        image: jupyter/all-spark-notebook:7f1482f5a136
+    - display_name: "Tensorflow environment"
+      description: "The Jupyter Stacks TF image with GPU support!"
+      kubespawner_override:
+        image: jupyter/tensorflow-notebook:7f1482f5a136
         extra_resource_limits:
           nvidia.com/gpu: "1"
