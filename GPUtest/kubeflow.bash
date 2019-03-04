@@ -61,13 +61,13 @@ kubectl get svc -n kubeflow
 Follwing https://www.kubeflow.org/docs/started/getting-started-gke/ for GKE deployment
 
 If you see Authorized domains, enter
-atlantean-bebop-233205.cloud.goog
+kubeflowTest.cloud.goog
 
 Save then create new credentials:
     Click Create credentials, and then click OAuth client ID.
     Under Application type, select Web application.
     In the Authorized redirect URIs box, enter the following:
-https://kubeflow.endpoints.atlantean-bebop-233205.cloud.goog/_gcp_gatekeeper/authenticate
+https://cadre.endpoints.kubeflowtest-233506/_gcp_gatekeeper/authenticate
 
 The simplest way to deploy Kubeflow is to use the Kubeflow deployment web interface:
 
@@ -77,7 +77,5 @@ The simplest way to deploy Kubeflow is to use the Kubeflow deployment web interf
     Click Create Deployment.
     
 In 10 mins, Kubeflow will be available at the following URI: 
-https://kubeflow.endpoints.atlantean-bebop-233205.cloud.goog/
-https://kubeflow.endpoints.kubeflow.cloud.goog/
-
+https://cadre.endpoints.kubeflowtest-233506.cloud.goog
 
