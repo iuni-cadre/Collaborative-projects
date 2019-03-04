@@ -26,6 +26,8 @@ nano nvidia-device-plugin-ds.yaml
 kubectl apply -f nvidia-device-plugin-ds.yaml
 kubectl describe nodes aks-nodepool1-35718790-0
 
+follow https://docs.microsoft.com/en-us/azure/aks/gpu-cluster to run sample GPU code
+
 --------------------------------------------------------------------------------
 How follwing instructions from https://zero-to-jupyterhub.readthedocs.io/en/latest/setup-helm.html
 
