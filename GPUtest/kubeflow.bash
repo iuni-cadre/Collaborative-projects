@@ -67,7 +67,7 @@ Save then create new credentials:
     Click Create credentials, and then click OAuth client ID.
     Under Application type, select Web application.
     In the Authorized redirect URIs box, enter the following:
-https://cadre.endpoints.kubeflowtest-233506/_gcp_gatekeeper/authenticate
+https://cadre.endpoints.kubeflowtest-233506.cloud.goog/_gcp_gatekeeper/authenticate
 
 The simplest way to deploy Kubeflow is to use the Kubeflow deployment web interface:
 
