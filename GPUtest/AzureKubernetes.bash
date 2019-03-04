@@ -9,7 +9,7 @@ ssh-keygen -f ssh-key-<CLUSTER-NAME>
 
 ----restart here using browser bash----
 az aks get-versions --location westus2 --output table
-az aks create --name kuberGPU --resource-group KubernetsTest --ssh-key-value ssh-key-kubernet.pub --node-count 1 --node-vm-size Standard_NC6 --kubernetes-version 1.10.12 --location=westus2 --output table
+az aks create --name kuberGPU --resource-group KubernetsTest --ssh-key-value ssh-key-kubernet.pub --node-count 1 --node-vm-size Standard_NC6 --kubernetes-version 1.12.6 --location=westus2 --output table
 
 az aks get-credentials --name kuberGPU --resource-group KubernetsTest --overwrite-existing --output table
 
@@ -55,10 +55,10 @@ helm repo update
 RELEASE=jhub
 NAMESPACE=jhub
 
-helm upgrade --install $RELEASE jupyterhub/jupyterhub   --namespace $NAMESPACE    --version=0.7.0   --values config.yaml
+helm upgrade --install $RELEASE jupyterhub/jupyterhub   --namespace $NAMESPACE    --version=0.8.0   --values config.yaml
 
 kubectl get pod --namespace jhub
 
 kubectl get service --namespace jhub
 
-helm upgrade -f config.yaml jhub jupyterhub/jupyterhub --version=0.7.0
+helm upgrade -f config.yaml jhub jupyterhub/jupyterhub --version=0.8.0
