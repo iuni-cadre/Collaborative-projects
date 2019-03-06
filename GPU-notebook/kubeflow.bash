@@ -20,6 +20,7 @@ following https://www.kubeflow.org/docs/components/ksonnet/ for ksonnet installa
 
       PATH=$PATH:${HOME}/bin/$KS_PKG
       
+ks version
 -----------------------------------------------------------------------------------
 following https://github.com/Azure/kubeflow-labs/tree/master/4-kubeflow for kubeflow deployment on azure
 
@@ -29,13 +30,13 @@ KFAPP=mykubeflowapp
 
 mkdir ${KUBEFLOW_SRC}
 cd ${KUBEFLOW_SRC}
-cd ${KFAPP}
 
 curl https://raw.githubusercontent.com/kubeflow/kubeflow/${KUBEFLOW_TAG}/scripts/download.sh | bash
 
 # Initialize a kubeflow app
 ~/kubeflow/scripts/kfctl.sh init ${KFAPP} --platform none
 
+cd ${KFAPP}
 ~/kubeflow/scripts/kfctl.sh generate platform
 ~/kubeflow/scripts/kfctl.sh apply platform
 
