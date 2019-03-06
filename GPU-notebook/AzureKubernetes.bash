@@ -35,6 +35,8 @@ kubectl delete jobs samples-tf-mnist-demo
 --------------------------------------------------------------------------------
 How follwing instructions from https://zero-to-jupyterhub.readthedocs.io/en/latest/setup-helm.html
 
+curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get | bash
+
 kubectl --namespace kube-system create serviceaccount tiller
 
 kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller

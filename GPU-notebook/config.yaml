@@ -21,8 +21,8 @@ singleuser:
   # Inspect the Dockerfile at:
   # https://github.com/jupyter/docker-stacks/tree/master/datascience-notebook/Dockerfile
   image:
-    name: jupyter/minimal-notebook
-    tag: 7f1482f5a136
+  name: jupyter/minimal-notebook
+  tag: 7f1482f5a136
   profileList:
     - display_name: "Minimal environment"
       description: "To avoid too much bells and whistles: Python."
@@ -36,8 +36,12 @@ singleuser:
       kubespawner_override:
         image: jupyter/all-spark-notebook:7f1482f5a136
     - display_name: "Tensorflow environment"
-      description: "The Jupyter Stacks TF image with GPU support!"
+      description: "The Jupyter Stacks TF image with CPU"
       kubespawner_override:
         image: jupyter/tensorflow-notebook:7f1482f5a136
+    - display_name: "Dedicated, 2 CPU cores & 13GB RAM, 1 NVIDIA Tesla K80 GPU"
+      description: "By selecting this choice, you will be assigned a environment that will run on a dedicated machine with a single GPU, just for you."
+      kubespawner_override:
+        image: consideratio/singleuser-gpu:v0.3.0
         extra_resource_limits:
           nvidia.com/gpu: "1"
