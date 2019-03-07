@@ -18,6 +18,7 @@ auth:
 singleuser:
   # Get the latest image tag at:
   # https://hub.docker.com/r/jupyter/datascience-notebook/tags/
+  # https://hub.docker.com/r/anjia0532/kubeflow-images-public.tensorflow-1.4.1-notebook-gpu/tags
   # Inspect the Dockerfile at:
   # https://github.com/jupyter/docker-stacks/tree/master/datascience-notebook/Dockerfile
   image:
