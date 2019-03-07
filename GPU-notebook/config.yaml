@@ -47,7 +47,7 @@ singleuser:
     - display_name: "Dedicated, 4 CPUs & 48GB RAM, 1 NVIDIA Tesla K80 GPU"
       description: "By selecting this choice, you will be assigned a environment that will run on a dedicated machine with a single GPU, just for you."
       kubespawner_override:
-        image: anjia0532/kubeflow-images-public.tensorflow-1.4.1-notebook-gpu:v20180707-5a11c84d
+        image: anjia0532/kubeflow-images-public.tensorflow-1.8.0-notebook-gpu:v20180629-445de31c
         cpu:
           limit: 4
           guarantee: 1
