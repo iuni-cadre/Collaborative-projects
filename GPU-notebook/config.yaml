@@ -44,12 +44,12 @@ singleuser:
       description: "The Jupyter Stacks TF image with CPU"
       kubespawner_override:
         image: jupyter/tensorflow-notebook:7f1482f5a136
-    - display_name: "Dedicated, 4 CPUs & 48GB RAM, 1 NVIDIA Tesla K80 GPU"
+    - display_name: "Dedicated, 5 CPUs & 48GB RAM, 1 NVIDIA Tesla K80 GPU"
       description: "By selecting this choice, you will be assigned a environment that will run on a dedicated machine with a single GPU, just for you."
       kubespawner_override:
-        image: anjia0532/kubeflow-images-public.tensorflow-1.8.0-notebook-gpu:v20180629-445de31c
+        image: tensorflow/tensorflow:1.12-gpu-py3-jupyter
         cpu:
-          limit: 4
+          limit: 5
           guarantee: 1
         memory:
           limit: 48G

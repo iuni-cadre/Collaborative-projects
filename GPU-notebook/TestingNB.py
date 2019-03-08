@@ -1,3 +1,5 @@
+pip uninstall tensorflow_gpu
+pip install tensorflow_gpu==1.12
 
 from tensorflow.python.client import device_lib
 

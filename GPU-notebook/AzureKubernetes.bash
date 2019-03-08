@@ -9,9 +9,9 @@ ssh-keygen -f ssh-key-<CLUSTER-NAME>
 
 ----restart here using browser bash----
 az aks get-versions --location westus2 --output table
-az aks create --name kubeflow --resource-group KubernetsTest --ssh-key-value ssh-key-kubernet.pub --node-count 1 --node-vm-size Standard_NC6 --kubernetes-version 1.12.6 --location=westus2 --output table
+az aks create --name jupyterHub --resource-group KubernetsTest --ssh-key-value ssh-key-kubernet.pub --node-count 1 --node-vm-size Standard_NC6 --kubernetes-version 1.11.8 --location=westus2 --output table
 
-az aks get-credentials --name kuberGPU --resource-group KubernetsTest --overwrite-existing --output table
+az aks get-credentials --name jupyterHub --resource-group KubernetsTest --overwrite-existing --output table
 
 kubectl get node
 
@@ -24,13 +24,17 @@ kubectl create namespace gpu-resources
 nano nvidia-device-plugin-ds.yaml
 
 kubectl apply -f nvidia-device-plugin-ds.yaml
-kubectl describe nodes aks-nodepool1-35718790-0
+kubectl describe nodes
 
 follow https://docs.microsoft.com/en-us/azure/aks/gpu-cluster to run sample GPU code
 kubectl apply -f samples-tf-mnist-demo.yaml
 kubectl get pods --selector app=samples-tf-mnist-demo
 kubectl logs samples-tf-mnist-demo-smnr6
 kubectl delete jobs samples-tf-mnist-demo
+
+####breaking into the node by ssh#########
+az vm user update --resource-group MC_KubernetsTest_jupyterHub_westus2 --name aks-nodepool1-39412713-0 --username azureuser --ssh-key-value ssh-key-kubernet.pub
+az vm list-ip-addresses --resource-group MC_KubernetsTest_jupyterHub_westus2 -o table
 
 --------------------------------------------------------------------------------
 How follwing instructions from https://zero-to-jupyterhub.readthedocs.io/en/latest/setup-helm.html
