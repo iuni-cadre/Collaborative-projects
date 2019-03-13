@@ -1,3 +1,0 @@
-[configuration]
-account = iunimag
-password = 7lgXqx3QIq4tgEhlHUjoNaEeXYdSUdJkjTHAfurEm7D3CjG1xJWLA6zJle4vW2uM/bZ+W4lwDJaElmCx/14sAg==
