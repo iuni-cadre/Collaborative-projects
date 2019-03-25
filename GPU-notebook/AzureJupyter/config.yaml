@@ -47,7 +47,7 @@ singleuser:
     - display_name: "Dedicated, 5 CPUs & 48GB RAM, 1 NVIDIA Tesla K80 GPU"
       description: "By selecting this choice, you will be assigned a environment that will run on a dedicated machine with a single GPU, just for you."
       kubespawner_override:
-        image: tensorflow/tensorflow:1.12-gpu-py3-jupyter
+        image: gcr.io/kubeflow-images-public/tensorflow-1.12.0-notebook-gpu:v-base-52cbb4c-1258
         cpu:
           limit: 5
           guarantee: 1
