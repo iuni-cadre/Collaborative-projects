@@ -1,28 +1,30 @@
 proxy:
-  secretToken: "<RANDOM_HEX>"
-  
+  secretToken: "b95e49fd7e5b19e12253e36266d92e0b3adcde2b519b7ac56674d58116e45287"
+
 prePuller:
   hook:
     enabled: false
-    
+
 auth:
   type: dummy
   dummy:
     password: 'CADRE'
+  admin:
+    users:
+      - IUNItester
   whitelist:
     users:
       - IUNItester
       - 2ndTester
 
-auth:
-  admin:
-    users:
-      - IUNItester
+cull:
+  enabled: false
           
 singleuser:
   # Get the latest image tag at:
   # https://hub.docker.com/r/jupyter/datascience-notebook/tags/
-  # https://hub.docker.com/r/anjia0532/kubeflow-images-public.tensorflow-1.4.1-notebook-gpu/tags
+  # https://hub.docker.com/u/tensorflow/
+  # https://console.cloud.google.com/gcr/images/kubeflow-images-public/GLOBAL/
   # Inspect the Dockerfile at:
   # https://github.com/jupyter/docker-stacks/tree/master/datascience-notebook/Dockerfile
   image:
@@ -56,3 +58,5 @@ singleuser:
           guarantee: 8G
         extra_resource_limits:
           nvidia.com/gpu: "1"
+        storage:
+          capacity: 30Gi
