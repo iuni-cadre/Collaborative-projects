@@ -5,6 +5,12 @@ prePuller:
   hook:
     enabled: false
 
+extraConfig: |-
+    c.KubeSpawner.start_timeout = 900
+
+cull:
+  enabled: true
+
 auth:
   type: dummy
   dummy:
@@ -16,9 +22,6 @@ auth:
     users:
       - IUNItester
       - 2ndTester
-
-cull:
-  enabled: false
           
 singleuser:
   # Get the latest image tag at:
@@ -38,10 +41,16 @@ singleuser:
       description: "If you want the additional bells and whistles: Python, R, and Julia."
       kubespawner_override:
         image: jupyter/datascience-notebook:7f1482f5a136
-    - display_name: "Spark environment"
-      description: "The Jupyter Stacks spark image!"
+    - display_name: "Jupyter Spark environment"
+      description: "The Jupyter spark image with R, Python and Scala!"
       kubespawner_override:
         image: jupyter/all-spark-notebook:7f1482f5a136
+        cpu:
+          limit: 5
+          guarantee: 2
+        memory:
+          limit: 48G
+          guarantee: 8G
     - display_name: "Tensorflow environment"
       description: "The Jupyter Stacks TF image with CPU"
       kubespawner_override:

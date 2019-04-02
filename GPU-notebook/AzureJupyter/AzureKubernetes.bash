@@ -72,3 +72,5 @@ kubectl get pod --namespace jhub
 kubectl get service --namespace jhub
 
 helm upgrade -f config.yaml jhub jupyterhub/jupyterhub --version=0.8.0
+
+kubectl delete pod -n jhub --all --grace-period=0 --force
