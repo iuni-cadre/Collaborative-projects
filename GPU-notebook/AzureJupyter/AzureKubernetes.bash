@@ -37,6 +37,8 @@ az vm user update --resource-group MC_KubernetsTest_jupyterHub_westus2 --name ak
 az vm list-ip-addresses --resource-group MC_KubernetsTest_jupyterHub_westus2 -o table
 kubectl exec -it aks-ssh-66cf68f4c7-mhjwh -- /bin/bash
 ssh -i id_rsa azureuser@10.240.0.4
+docker ps --filter "label=jhub"
+docker ps -a|grep sha256:43618b2074246ac38d8ade648c555cc103f663f52752a7a6cf8bdd7da96d2c21
 --------------------------------------------------------------------------------
 How follwing instructions from https://zero-to-jupyterhub.readthedocs.io/en/latest/setup-helm.html
 
@@ -75,3 +77,5 @@ kubectl get service --namespace jhub
 helm upgrade -f config.yaml jhub jupyterhub/jupyterhub --version=0.8.0
 
 kubectl delete pod -n jhub --all --grace-period=0 --force
+
+kubectl -n jhub exec jupyter-iunitester df
