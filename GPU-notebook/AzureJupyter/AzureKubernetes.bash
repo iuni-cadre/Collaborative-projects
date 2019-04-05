@@ -32,10 +32,11 @@ kubectl get pods --selector app=samples-tf-mnist-demo
 kubectl logs samples-tf-mnist-demo-smnr6
 kubectl delete jobs samples-tf-mnist-demo
 
-####breaking into the node by ssh#########
+####breaking into the node by ssh#########https://docs.microsoft.com/en-us/azure/aks/ssh
 az vm user update --resource-group MC_KubernetsTest_jupyterHub_westus2 --name aks-nodepool1-39412713-0 --username azureuser --ssh-key-value ssh-key-kubernet.pub
 az vm list-ip-addresses --resource-group MC_KubernetsTest_jupyterHub_westus2 -o table
-
+kubectl exec -it aks-ssh-66cf68f4c7-mhjwh -- /bin/bash
+ssh -i id_rsa azureuser@10.240.0.4
 --------------------------------------------------------------------------------
 How follwing instructions from https://zero-to-jupyterhub.readthedocs.io/en/latest/setup-helm.html
 
