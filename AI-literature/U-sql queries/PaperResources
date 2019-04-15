@@ -1,0 +1,151 @@
+DECLARE @dataVersion string = "mag-2019-01-25";
+DECLARE @blobAccount string = "iunimag";
+DECLARE @uriPrefix   string = "wasb://" + @dataVersion + "@" + @blobAccount + "/";
+
+DECLARE @output  string =  @uriPrefix + "AIpapersCodeData.tsv";
+//DECLARE @inputFiles   string = "/YingGroup/Xuli/";
+DECLARE @oldoutput   string = @uriPrefix + "AIpapersAll.tsv";
+
+//
+// Load Academic Graph data
+//@papers = Papers(@uriPrefix);
+@resources = PaperResources(@uriPrefix);
+//@citationsCon = PaperCitationContexts(@uriPrefix);
+
+//
+// Read the input files
+//
+/**/
+DECLARE @input_Path string = @oldoutput;
+@paperList =
+    EXTRACT AuthorIds String,
+           AuthorNames String,
+           AuthorOrders String,
+           OrigAffiliates String,
+           Affiliates String,
+           DisplayName String,
+           JPaperCount String,
+           JCitationCount String,
+           PaperId long,
+           Rank String,
+           Doi String,
+           DocType String,
+           JournalId String,
+           ConferenceInstanceId String,
+           OriginalTitle String,
+           Year String,
+           Date String,
+           Publisher String,
+           ReferenceCount String,
+           CitationCount String,
+           EstimatedCitation String,
+           IndexedAbstract  String
+FROM @input_Path
+USING Extractors.Tsv(silent: true, quoting: false, skipFirstNRows:1);
+
+@dataList =
+    SELECT P.PaperId,
+           string.Join("; ", ARRAY_AGG(R.ResourceUrl)) AS data
+    FROM @resources AS R
+         INNER JOIN @paperList AS P
+         ON R.PaperId == P.PaperId 
+    WHERE R.ResourceType == 2 AND R.RelationshipType ==1
+    GROUP BY P.PaperId;
+
+@codeList =
+    SELECT P.PaperId,
+           string.Join("; ", ARRAY_AGG(R.ResourceUrl)) AS code
+    FROM @resources AS R
+         INNER JOIN @paperList AS P
+         ON R.PaperId == P.PaperId 
+    WHERE R.ResourceType == 4 AND R.RelationshipType ==1
+    GROUP BY P.PaperId;
+
+@dataListCite =
+    SELECT P.PaperId,
+           string.Join("; ", ARRAY_AGG(R.ResourceUrl)) AS dataCite
+    FROM @resources AS R
+         INNER JOIN @paperList AS P
+         ON R.PaperId == P.PaperId 
+    WHERE R.ResourceType == 2 AND R.RelationshipType ==2
+    GROUP BY P.PaperId;
+
+@codeListCite =
+    SELECT P.PaperId,
+           string.Join("; ", ARRAY_AGG(R.ResourceUrl)) AS codeCite
+    FROM @resources AS R
+         INNER JOIN @paperList AS P
+         ON R.PaperId == P.PaperId 
+    WHERE R.ResourceType == 4 AND R.RelationshipType ==2
+    GROUP BY P.PaperId;
+
+@projctList =
+    SELECT P.PaperId,
+           string.Join("; ", ARRAY_AGG(R.ResourceUrl)) AS project
+    FROM @resources AS R
+         INNER JOIN @paperList AS P
+         ON R.PaperId == P.PaperId 
+    WHERE R.ResourceType == 1 AND R.RelationshipType ==1
+    GROUP BY P.PaperId;
+
+@MAGpapersFull =
+    SELECT DISTINCT  P.AuthorIds,
+           P.AuthorNames,
+           P.AuthorOrders,
+           P.OrigAffiliates,
+           P.Affiliates,
+           P.DisplayName,
+           P.JPaperCount,
+           P.JCitationCount,
+           P.PaperId,
+           P.Rank,
+           P.Doi,
+           P.DocType,
+           P.JournalId,
+           P.ConferenceInstanceId,
+           P.OriginalTitle,
+           P.Year,
+           P.Date,
+           P.Publisher,
+           P.ReferenceCount,
+           P.CitationCount,
+           P.EstimatedCitation,
+           P.IndexedAbstract,
+           Proj.project,
+           D.data,
+           C.code,
+           Dc.dataCite,
+           Cc.codeCite
+    FROM @paperList AS P
+         LEFT OUTER JOIN
+             @projctList AS Proj
+         ON P.PaperId == Proj.PaperId
+         LEFT OUTER JOIN
+             @dataList AS D
+         ON P.PaperId == D.PaperId
+         LEFT OUTER JOIN
+             @codeList AS C
+         ON P.PaperId == C.PaperId
+         LEFT OUTER JOIN
+             @dataListCite AS Dc
+         ON P.PaperId == Dc.PaperId
+         LEFT OUTER JOIN
+             @codeListCite AS Cc
+         ON P.PaperId == Cc.PaperId;
+
+OUTPUT @MAGpapersFull
+TO @output
+USING Outputters.Tsv(quoting : false, outputHeader : true);
+
+// User script ended
+// Auto-generated footer code
+
+// Auto-generated footer code ended
+
+
+// User script ended
+// Auto-generated footer code
+
+// Auto-generated footer code ended
+
+
