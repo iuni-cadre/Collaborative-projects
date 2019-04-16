@@ -79,3 +79,8 @@ helm upgrade -f config.yaml jhub jupyterhub/jupyterhub --version=0.8.0
 kubectl delete pod -n jhub --all --grace-period=0 --force
 
 kubectl -n jhub exec jupyter-iunitester df
+
+az disk update \
+    --resource-group MC_KubernetsTest_jupyterHub_westus2 \
+    --name aks-nodepool1-39412713-0_OsDisk_1_21a33a2530464d3ba3ffb5bd90fdb4c0 \
+    --size-gb 80
