@@ -5,13 +5,13 @@ import matplotlib.pyplot as plt
 #########################################
 
 #Load Journal of Informetrics Data:
-j_of_inf_yd = pd.read_csv("/home/jovyan/cadre-query-results/{query_id_here}.csv", sep=',', header = 0)
+j_of_inf_yd = pd.read_csv("/home/jovyan/{query_id_here}.csv", sep=',', header = 0)
 print(j_of_inf_yd)
 
 #########################################
 
 #Load Scientometrics Data:
-scien_yd = pd.read_csv("/home/jovyan/cadre-query-results/{query_id_here}.csv", sep=',', header = 0)
+scien_yd = pd.read_csv("/home/jovyan/{query_id_here}.csv", sep=',', header = 0)
 print(scien_yd)
 
 #########################################
