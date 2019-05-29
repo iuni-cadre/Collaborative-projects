@@ -8,6 +8,7 @@ du -a /home | sort -n -r | head -n 5
 kubectl -n kube-system create serviceaccount tiller
 kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
 helm init --service-account=tiller
+helm init --upgrade
 
 kubectl -n kube-system delete deployment tiller-deploy
 kubectl delete clusterrolebinding tiller
