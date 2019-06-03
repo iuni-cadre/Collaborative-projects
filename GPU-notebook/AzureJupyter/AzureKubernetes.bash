@@ -35,7 +35,12 @@ kubectl delete jobs samples-tf-mnist-demo
 ####breaking into the node by ssh#########https://docs.microsoft.com/en-us/azure/aks/ssh
 az vm user update --resource-group MC_KubernetsTest_jupyterHub_westus2 --name aks-nodepool1-39412713-0 --username azureuser --ssh-key-value ssh-key-kubernet.pub
 az vm list-ip-addresses --resource-group MC_KubernetsTest_jupyterHub_westus2 -o table
-kubectl exec -it aks-ssh-66cf68f4c7-mhjwh -- /bin/bash
+kubectl exec -it aks-ssh-66cf68f4c7-2r4rw -- /bin/bash
+-------at docker----------------
+apt-get update && apt-get install openssh-client -y
+-----------new ternminal-------------
+kubectl cp ssh-key-kubernet aks-ssh-66cf68f4c7-2r4rw:/id_rsa
+--------back at docker-----------
 ssh -i id_rsa azureuser@10.240.0.4
 docker ps --filter "label=jhub"
 docker ps -a|grep sha256:43618b2074246ac38d8ade648c555cc103f663f52752a7a6cf8bdd7da96d2c21
