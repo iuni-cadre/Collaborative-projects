@@ -1,4 +1,4 @@
-Cell death and differentiation
+Cell death & differentiation
 Cell systems
 Current opinion in biotechnology
 Current opinion in chemical biology
@@ -6,4 +6,4 @@ Embo reports
 Metabolic engineering
 Molecular aspects of medicine
 Molecular therapy
-Plant cell
+The plant cell
