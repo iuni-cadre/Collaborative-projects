@@ -1,0 +1,187 @@
+// Auto-generated header code
+
+// Auto-generated header code ended
+
+// User script
+//
+// This U-SQL script demonstrates loading data provided in this dataset
+// and computing h-index for all authors of an affiliation.
+// U-SQL script could be run in Azure Data Lake Analytic service.
+//
+// To do:
+//   1. Run CreateFunctions.usql to define functions before running this script
+//   2. Replace ##YourBlobAccount## with your blob account
+//
+//
+DECLARE @dataVersion string = "mag-2019-10-03";
+DECLARE @blobAccount string = "iunimag";
+DECLARE @uriPrefix   string = "wasb://" + @dataVersion + "@" + @blobAccount + "/";
+
+//DECLARE @output  string = "/YingGroup/Xuli/AIpapersConf.tsv";
+DECLARE @inputFiles   string = "/YingGroup/";
+DECLARE @output   string = @uriPrefix + "AIpapersTop.tsv";
+//
+// Load Academic Graph data
+@papers = Papers(@uriPrefix);
+@paperAuthorAffiliations = PaperAuthorAffiliations(@uriPrefix);
+@authors = Authors(@uriPrefix);
+@abstracts = PaperAbstractsInvertedIndex(@uriPrefix);
+@conferences = ConferenceInstances(@uriPrefix);
+@journals = Journals(@uriPrefix);
+@affiliations = Affiliations(@uriPrefix);
+//@citations = PaperReferences(@uriPrefix);
+//@citationsCon = PaperCitationContexts(@uriPrefix);
+
+//
+// Read the input files
+//
+/**/
+DECLARE @input_Path string = @inputFiles + "AItopList.tsv";
+@journalList =
+    EXTRACT name string
+FROM @input_Path
+USING Extractors.Csv();
+
+@journalAI =
+    SELECT Regex.Replace(Regex.Replace(P.name, "[^a-zA-Z0-9 -]", ""), "[-]", " ").ToLower() AS newTitle
+    FROM @journalList AS P;
+
+
+@journalMatched =
+    SELECT J.JournalId AS JournalId,
+           Regex.Replace(Regex.Replace(J.NormalizedName, "[^a-zA-Z0-9 -]", ""), "[-]", " ").ToLower() AS NormalizedName,
+           J.DisplayName AS DisplayName,
+           J.PaperCount AS PaperCount,
+           J.CitationCount AS CitationCount
+    FROM @journalAI AS L
+         INNER JOIN
+             @journals AS J
+         ON L.newTitle == J.NormalizedName;
+
+@papersMAGJ =
+    SELECT P.PaperId,
+           P.ConferenceInstanceId,
+           P.JournalId,
+           J.DisplayName AS Venue,
+           J.PaperCount AS JPaperCount,
+           J.CitationCount AS JCitationCount,
+           P.Rank,
+           P.Doi,
+           P.DocType,
+           P.OriginalTitle,
+           P.Year,
+           P.Date,
+           P.Publisher,
+           P.ReferenceCount,
+           P.CitationCount,
+           P.EstimatedCitation
+    FROM @papers AS P
+         INNER JOIN
+             @journalMatched AS J
+         ON P.JournalId == J.JournalId;
+
+@confMAG =
+    SELECT C.ConferenceInstanceId AS ConferenceInstanceId,
+           Regex.Replace(C.NormalizedName, "[^a-zA-Z]", "").ToLower() AS newName,
+           C.DisplayName AS DisplayName,
+           C.PaperCount AS PaperCount,
+           C.CitationCount AS CitationCount
+    FROM @conferences AS C;
+
+@confMatched =
+    SELECT C.ConferenceInstanceId AS ConferenceInstanceId,
+           C.newName AS newName,
+           C.DisplayName AS DisplayName,
+           C.PaperCount AS PaperCount,
+           C.CitationCount AS CitationCount
+    FROM @journalAI AS L
+         INNER JOIN 
+            @confMAG AS C
+         ON C.newName == L.newTitle;
+
+@papersMAGC =
+    SELECT P.PaperId,
+           P.JournalId,
+           P.ConferenceInstanceId,
+           C.DisplayName AS Venue,
+           C.PaperCount AS JPaperCount,
+           C.CitationCount AS JCitationCount,
+           P.Rank,
+           P.Doi,
+           P.DocType,
+           P.OriginalTitle,
+           P.Year,
+           P.Date,
+           P.Publisher,
+           P.ReferenceCount,
+           P.CitationCount,
+           P.EstimatedCitation
+    FROM @papers AS P
+         INNER JOIN
+             @confMatched AS C
+         ON P.ConferenceInstanceId == C.ConferenceInstanceId;
+
+@allPapers =    
+    SELECT * FROM @papersMAGJ
+    UNION DISTINCT      // Using DISTINCT is optional as it is the default value
+    SELECT * FROM @papersMAGC;  
+
+@AuthorPapers =
+    SELECT Paa.PaperId,
+           string.Join("; ", ARRAY_AGG(A.AuthorId)) AS AuthorIds,
+           string.Join("; ", ARRAY_AGG(A.DisplayName)) AS AuthorNames,
+           string.Join("; ", ARRAY_AGG(Paa.AuthorSequenceNumber)) AS AuthorOrders,
+           string.Join("; ", ARRAY_AGG(Paa.OriginalAffiliation)) AS OrigAffiliates,
+           string.Join("; ", ARRAY_AGG(Af.NormalizedName)) AS AffiliatesNormalized,
+           string.Join("; ", ARRAY_AGG(Af.WikiPage)) AS AffiliatesWiki,
+           string.Join("; ", ARRAY_AGG(Af.Latitude)) AS AffiliatesLat,
+           string.Join("; ", ARRAY_AGG(Af.Longitude)) AS AffiliatesLng
+    FROM @allPapers AS P
+         INNER JOIN @paperAuthorAffiliations AS Paa
+         ON P.PaperId == Paa.PaperId
+         LEFT JOIN @authors AS A
+         ON A.AuthorId == Paa.AuthorId
+         LEFT JOIN @affiliations AS Af
+         ON Paa.AffiliationId == Af.AffiliationId
+    GROUP BY Paa.PaperId;
+
+@MAGpapersFull =
+    SELECT DISTINCT  A.AuthorIds,
+           A.AuthorNames,
+           A.AuthorOrders,
+           A.OrigAffiliates,
+           A.AffiliatesNormalized,
+           A.AffiliatesWiki,
+           A.AffiliatesLat,
+           A.AffiliatesLng,
+           P.Venue,
+           P.JPaperCount,
+           P.PaperId,
+           P.Doi,
+           P.DocType,
+           P.JournalId,
+           P.ConferenceInstanceId,
+           P.OriginalTitle,
+           P.Year,
+           P.Date,
+           P.Publisher,
+           P.ReferenceCount,
+           P.CitationCount,
+           P.EstimatedCitation,
+           Ab.IndexedAbstract
+    FROM @allPapers AS P
+         LEFT OUTER JOIN
+             @AuthorPapers AS A
+         ON P.PaperId == A.PaperId
+         LEFT OUTER JOIN
+             @abstracts AS Ab
+         ON P.PaperId == Ab.PaperId;
+
+OUTPUT @MAGpapersFull
+TO @output
+USING Outputters.Tsv(quoting : false, outputHeader : true);
+
+// User script ended
+// Auto-generated footer code
+
+// Auto-generated footer code ended
