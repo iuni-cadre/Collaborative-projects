@@ -1,0 +1,68 @@
+Tag,Description,XML Path,Comments
+PT,Publication Year,REC/static_data/summary/pub_info/@pubyear,
+AU,WoS Standard Names,REC/static_data/summary/names/name/wos_standard,
+BA,Book Authors,N/A,Does not appear to be in use in the export (no distinction from WoS Standard Names)
+BE,Book Editors,REC/static_data/summary/names/name[@role=”book_editor”]/full_name,
+GP,Book Group Authors,N/A,Does not appear to be in use in the export (no distinction from Group Authors)
+AF,Author Full Names,REC/static_data/summary/names/name[@role=”author”]/full_name,
+BF,Book Author Full Names,N/A,Does not appear to be in use in the export (no distinction from Author Full Names)
+CA,Group Authors,REC/static_data/summary/names/name[@role=”corp”]/display_name,
+TI,Article Title,REC/static_data/summary/titles/title[@type=”item”],
+SO,Source Title,REC/static_data/summary/titles/title[@type=”source”],
+SE,Book Series Title,REC/static_data/summary/titles/title[@type=”book_series”],
+BS,Book Series Subtitle,REC/static_data/summary/titles/title[@type=”book_seriessub”],
+LA,Language,REC/static_data/item/reviewed_work/languages/language,
+DT,Document Type,REC/static_data/summary/doctypes/doctype,
+CT,Conference Title,REC/static_data/summary/conferences/conference/conf_titles/conf_title,
+CY,Conference Date,REC/static_data/summary/conferences/conference/conf_dates/conf_date,
+CL,Conference Location,REC/static_data/summary/conferences/conference/conf_locations/conf_location/conf_city && REC/static_data/summary/conferences/conference/conf_locations/conf_location/conf_state,Concatenates the conference city and conference state (which can actually be a country) values from the XML into one field
+SP,Conference Sponsor,REC/static_data/summary/conferences/conference/sponsors/sponsor,
+HO,Conference Host,REC/static_data/summary/conferences/conference/conf_locations/conf_location/conf_host,
+DE,Author Keywords,REC/static_data/fullrecord_metadata/keywords/keyword,
+ID,Keywords Plus,REC/static_data/item/keywords_plus/keyword,
+AB,Abstract,REC/static_data/fullrecord_metadata/abstracts/abstract/abstract_text/p,
+C1,Addresses,REC/static_data/fullrecord_metadata/addresses/address_name/address_spec/full_address,
+RP,Reprint Addresses,REC/static_data/item/reprint_contact/address_spec/full_address,
+EM,Email Addresses,REC/static_data/summary/names/name[@role=”author”]/email_addr,
+RI,RIDs,REC/static_data/contributors/contributor/name/@orcid_id,
+OI,ORCIDs,REC/static_data/contributors/contributor/name/@r_id,
+FU,Funding Orgs,REC/static_data/fullrecord_metadata/fund_ack/grants/grant_agency,
+FX,Funding Text,REC/static_data/fullrecord_metadata/fund_ack/fund_text/p,
+CR,Cited References,REC/static_data/fullrecord_metadata/references,Not available as a single field in the XML. This path is to the node which contains the fielded info for the references as children
+NR,Cited Reference Count,REC/static_data/fullrecord_metadata/references/@count,
+TC,"Times Cited, WoS Core",N/A,"Given the ever-changing nature of citation counts, these are not in the XML but rather available via supplementary file"
+Z9,"Times Cited, All Databases",N/A,"Same reasoning above, not included because of the dyanmic nature of the value"
+U1,180 Day Usage Count,N/A,"Same reasoning above, not included because of the dyanmic nature of the value"
+U2,Since 2013 Usage Count,N/A,"Same reasoning above, not included because of the dyanmic nature of the value"
+PU,Publisher,REC/static_data/summary/publishers/publisher/names/display_name,
+PI,Publisher City,REC/static_data/summary/publishers/publisher/address_spec/city,
+PA,Publisher Address,REC/static_data/summary/publishers/publisher/address_spec/full_address,
+SN,ISSN,REC/dynamic_data/cluster_related/identifiers/identifier[@type=”issn”]/@value,
+EI,eISSN,REC/dynamic_data/cluster_related/identifiers/identifier[@type=”eissn”]/@value,
+BN,ISBN,REC/dynamic_data/cluster_related/identifiers/identifier[@type=”isbn”]/@value,
+J9,Journal Abbreviation,REC/static_data/summary/titles/title[@type=”source_abbrev”],
+JI,Journal ISO Abbreviation,REC/static_data/summary/titles/title[@type=”abbrev_iso”],
+PD,Publication Date,REC/static_data/summary/pub_info/@coverdate,"Tabbed export excludes the year, while this field includes the full cover date with the year"
+PY,Publication Year,REC/static_data/summary/pub_info/@pubyear,
+VL,Volume,REC/static_data/summary/pub_info/@vol,
+IS,Issue,REC/static_data/summary/pub_info/@issue,
+PN,Part Number,REC/static_data/summary/pub_info/@part_no,
+SU,Supplement,REC/static_data/summary/pub_info/@supplement,
+SI,Special Issue,REC/static_data/summary/pub_info/@special_issue,
+MA,Meeting Abstract,REC/dynamic_data/cluster_related/identifiers/identifier[@type=”meeting_abs”]/@value,
+BP,Start Page,REC/static_data/summary/pub_info/page/@begin,
+EP,End Page,REC/static_data/summary/pub_info/page/@end,
+AR,Article Number,REC/dynamic_data/cluster_related/identifiers/identifier[@type=”art_no”]/@value,
+DI,DOI,REC/dynamic_data/cluster_related/identifiers/identifier[@type=”doi”]/@value && REC/dynamic_data/cluster_related/identifiers/identifier[@type=”xref_doi”]/@value,The application combines the two different DOIs in the XML into one field for the export
+D2,Book DOI,REC/dynamic_data/cluster_related/identifiers/identifier[@type=”parent_book_doi”]/@value,
+EA,Early Access Date,REC/static_data/summary/pub_info/@early_access_date,
+PG,Number of Pages,REC/static_data/summary/pub_info/page/@page_count,
+WC,WoS Categories,REC/static_data/fullrecord_metadata/category_info/subjects/subject[@ascatype=”traditional”],
+SC,Research Areas,REC/static_data/fullrecord_metadata/category_info/subjects/subject[@ascatype=”extended”],
+GA,IDS Number,N/A,Internal identifier used in the past for document delivery. Not of value to XML customers.
+UT,UT (Unique WoS ID),REC/UID,
+PM,Pubmed ID,REC/dynamic_data/cluster_related/identifiers/identifier[@type=”pmid”]/@value,
+OA,Open Acces Designations,REC/dynamic_data/ic_related/oases/oas/@type,
+HC,Highly Cited Status,N/A,Comes from linking with ESI product so not included in the XML (not to mention also the mercurial nature of the status that would not be included for the same reason times cited is not included).
+HP,Hot Paper Status,N/A,Comes from linking with ESI product so not included in the XML (not to mention also the mercurial nature of the status that would not be included for the same reason times cited is not included).
+DA,Date of Export,N/A,
